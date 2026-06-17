@@ -52,14 +52,18 @@ def read_dashboard(request: Request, db: Session = Depends(get_db)):
     total_revenue = sum(o.total for o in orders)
     pending_orders = sum(1 for o in orders if o.status == "Pendiente")
     
-    return templates.TemplateResponse("dashboard.html", {
-        "request": request,
-        "users": users,
-        "orders": orders,
-        "total_revenue": total_revenue,
-        "pending_orders": pending_orders,
-        "total_users": len(users)
-    })
+    # Asignación explícita de request, name y context
+    return templates.TemplateResponse(
+        request=request,
+        name="dashboard.html",
+        context={
+            "users": users,
+            "orders": orders,
+            "total_revenue": total_revenue,
+            "pending_orders": pending_orders,
+            "total_users": len(users)
+        }
+    )
 
 @app.post("/users/add")
 def add_user(name: str = Form(...), email: str = Form(...), role: str = Form(...), db: Session = Depends(get_db)):
