@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Panel de Control{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .dark-glass-panel {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .sidebar-link {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(4px);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(107, 114, 128, 0.8); }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-gray-100 text-gray-800 antialiased h-screen flex overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-64 dark-glass-panel text-white hidden md:flex flex-col shadow-2xl z-20">
+        <div class="h-20 flex items-center justify-center border-b border-gray-700/50">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center mr-3 shadow-lg shadow-purple-500/30">
+                <i class="fas fa-layer-group text-white text-lg"></i>
+            </div>
+            <span class="text-2xl font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-pink-400">NEXUS</span>
+        </div>
+        
+        <div class="p-5 flex-1 overflow-y-auto">
+            <p class="text-xs text-gray-400 uppercase tracking-widest mb-3 mt-2 px-2 font-semibold">Principal</p>
+            <ul class="space-y-1.5">
+                <li>
+                    <a href="/" class="sidebar-link flex items-center px-4 py-3 rounded-xl {% if request.url.path == '/' %}bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shadow-inner{% else %}text-gray-300 hover:text-white{% endif %}">
+                        <i class="fas fa-chart-pie w-6"></i> <span class="font-medium">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/orders" class="sidebar-link flex items-center px-4 py-3 rounded-xl {% if request.url.path == '/orders' %}bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shadow-inner{% else %}text-gray-300 hover:text-white{% endif %}">
+                        <i class="fas fa-file-invoice-dollar w-6"></i> <span class="font-medium">Órdenes</span>
+                    </a>
+                </li>
+                {% if user and user.role == 'Admin' %}
+                <p class="text-xs text-gray-400 uppercase tracking-widest mb-3 mt-8 px-2 font-semibold">Administración</p>
+                <li>
+                    <a href="/users" class="sidebar-link flex items-center px-4 py-3 rounded-xl {% if request.url.path == '/users' %}bg-pink-500/20 text-pink-300 border border-pink-500/30 shadow-inner{% else %}text-gray-300 hover:text-white{% endif %}">
+                        <i class="fas fa-users-cog w-6"></i> <span class="font-medium">Usuarios</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        
+        <div class="p-4 border-t border-gray-700/50 bg-black/20">
+            <div class="flex items-center px-2 py-2">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center mr-3 border border-gray-600 shadow-inner">
+                    <i class="fas fa-user text-gray-300"></i>
+                </div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-sm font-semibold text-white truncate">{{ user.name if user else 'Invitado' }}</p>
+                    <p class="text-xs text-indigo-300 font-medium truncate">{{ user.role if user else '' }}</p>
+                </div>
+            </div>
+            <a href="/logout" class="mt-3 flex items-center justify-center w-full py-2.5 px-4 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl transition-colors border border-red-500/20 font-medium text-sm">
+                <i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-[#f4f7fb] relative">
+        <!-- Decorative background elements -->
+        <div class="absolute top-0 left-0 w-full h-64 bg-indigo-600 z-0" style="clip-path: polygon(0 0, 100% 0, 100% 30%, 0 100%); opacity: 0.05;"></div>
+        
+        <!-- Topbar -->
+        <header class="h-20 glass-panel flex items-center justify-between px-8 z-10 sticky top-0">
+            <div class="flex items-center">
+                <button class="md:hidden text-gray-600 mr-4 hover:text-indigo-600 transition-colors">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <h2 class="text-2xl font-bold text-gray-800 tracking-tight">{% block header_title %}Vista General{% endblock %}</h2>
+            </div>
+            <div class="flex items-center space-x-5">
+                <div class="relative">
+                    <button class="w-10 h-10 rounded-full bg-white shadow-sm border border-gray-200 flex items-center justify-center text-gray-400 hover:text-indigo-500 transition-colors">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <span class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="flex-1 overflow-y-auto p-8 z-10">
+            <div class="max-w-7xl mx-auto space-y-8">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Usuarios - NEXUS{% endblock %}
+{% block header_title %}Gestión de Usuarios{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+        <h3 class="text-lg font-bold text-gray-800">Directorio de Usuarios</h3>
+        <span class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-3 py-1 rounded-full">{{ users|length }} Usuarios</span>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs uppercase tracking-wider">
+                    <th class="p-4 font-semibold">ID</th>
+                    <th class="p-4 font-semibold">Nombre</th>
+                    <th class="p-4 font-semibold">Email</th>
+                    <th class="p-4 font-semibold">Rol</th>
+                    <th class="p-4 font-semibold text-right">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for u in users %}
+                <tr class="hover:bg-gray-50 transition-colors group">
+                    <td class="p-4 text-sm text-gray-500">#{{ u.id }}</td>
+                    <td class="p-4">
+                        <div class="flex items-center">
+                            <div class="h-8 w-8 rounded-full bg-gradient-to-tr from-indigo-400 to-pink-400 text-white flex items-center justify-center font-bold text-xs mr-3">
+                                {{ u.name[0] | upper }}
+                            </div>
+                            <span class="font-medium text-gray-800">{{ u.name }}</span>
+                            {% if u.id == user.id %}
+                            <span class="ml-2 bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">Tú</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="p-4 text-sm text-gray-600">{{ u.email }}</td>
+                    <td class="p-4">
+                        <form action="/users/{{ u.id }}/role" method="POST" class="inline-flex items-center">
+                            <select name="role" onchange="this.form.submit()" class="text-sm bg-gray-100 border-none rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-indigo-500 cursor-pointer" {% if u.id == user.id %}disabled{% endif %}>
+                                <option value="Admin" {% if u.role == 'Admin' %}selected{% endif %}>Admin</option>
+                                <option value="Operador" {% if u.role == 'Operador' %}selected{% endif %}>Operador</option>
+                                <option value="Usuario" {% if u.role == 'Usuario' %}selected{% endif %}>Usuario</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td class="p-4 text-right">
+                        {% if u.id != user.id %}
+                        <form action="/users/{{ u.id }}/delete" method="POST" class="inline-block" onsubmit="return confirm('¿Estás seguro de eliminar a este usuario?');">
+                            <button type="submit" class="text-red-400 hover:text-red-600 transition-colors p-2 hover:bg-red-50 rounded-lg">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
