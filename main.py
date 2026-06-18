@@ -205,3 +205,11 @@ def delete_order(order_id: int, db: Session = Depends(get_db), current_user: Use
         db.delete(order)
         db.commit()
     return RedirectResponse(url="/orders", status_code=303)
+
+@app.post("/orders/{order_id}/status")
+def update_order_status(order_id: int, status: str = Form(...), db: Session = Depends(get_db), current_user: UserDB = Depends(login_required)):
+    order = db.query(OrderDB).filter(OrderDB.id == order_id).first()
+    if order:
+        order.status = status
+        db.commit()
+    return RedirectResponse(url="/orders", status_code=303)
