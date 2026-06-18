@@ -5,5 +5,6 @@ psycopg2-binary
 pydantic
 jinja2
 python-multipart
-passlib[bcrypt]
+passlib
+bcrypt
 itsdangerous
