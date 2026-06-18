@@ -1,0 +1,9 @@
+Enlaces del Proyecto - Grupo 4
+
+1. Repositorio de GitHub:
+   https://github.com/Jhoel-Oblitas/tarea-railway-grupo4
+   (Contiene el código fuente del panel de control de NEXUS, la configuración de despliegue y el historial de commits).
+
+2. Aplicación Web Desplegada en Railway:
+   https://tarea-railway-grupo4-production.up.railway.app
+   (Sitio web en producción donde la aplicación está funcionando en la nube vinculada a una base de datos PostgreSQL).
